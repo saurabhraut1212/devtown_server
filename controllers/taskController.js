@@ -5,14 +5,16 @@ export const createTask = async (req, res) => {
     try {
         const { title, description, dueDate, status, assignedUser, priority } = req.body;
 
+        const createdBy = req.user._id;
+
         const newTask = new Task({
             title,
             description,
             dueDate,
             status,
-            assignedUser,
+            assignedUser: req.user.role === 'admin' ? assignedUser : createdBy,
             priority,
-            createdBy: req.user._id
+            createdBy
         });
 
         await newTask.save();
@@ -22,6 +24,7 @@ export const createTask = async (req, res) => {
         res.status(500).json({ message: 'Internal server error' });
     }
 };
+
 
 export const updateTask = async (req, res) => {
     try {
